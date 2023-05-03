@@ -28,8 +28,8 @@ def calculate_inv_sbox():
         index1 = int(index1, 16)
         index2 = format(index, "02x")[1]
         index2 = int(index2, 16)
-        new_index = index1 + index2*16
-        INV_SBOX[new_index] = "0x"+format(int(i%16), "01x")+format(int(i/16), "01x")
+        new_index = index1*16 + index2
+        INV_SBOX[new_index] = "0x"+format(int(i/16), "01x")+format(int(i%16), "01x")
         print("index1: "+str(index1)+", index2: "+str(index2)+", new_index: "+str(new_index)+", added: "+str(INV_SBOX[new_index]))
     print("The reverse sbox is: ")
     for i in range (0, 256):
