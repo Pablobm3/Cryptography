@@ -1,6 +1,7 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <cstring>
 
 const unsigned int NUM_ROUNDS = 4 + 6;
 
@@ -24,33 +25,7 @@ static const unsigned char SBOX[256] =
   0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16
 };
 
-unsigned char* calculate_inv_sbox(){
-	unsigned char* tmp_inv_sbox = new unsigned char[256];
-    for (int i = 0; i < 256; i++) {
-        int index = SBOX[i];
-        std::stringstream ss;
-        ss << std::hex << std::setw(2) << std::setfill('0') << index; // Use std::hex to format as hexadecimal
-        std::cout << "ss: " << ss.str();
-        std::string index_str = ss.str();
-        int index1 = stoi(index_str.substr(0, 1), nullptr, 16);
-        int index2 = stoi(index_str.substr(1, 1), nullptr, 16);
-        int new_index = index1 + index2 * 16;
-        std::cout << "index1: " << index1 << ", index2: " << index2 << ", new_index: " << new_index << std::endl;
-        std::stringstream ss2;
-        //ss2 << "0x" << std::setw(2) << std::setfill('0') << (i % 16) << std::setw(2) << std::setfill('0') << (i / 16);
-		ss2 << "0x" << index_str;
-        std::cout << "ss2: " << ss2.str();
-        tmp_inv_sbox[new_index] = stoi(ss2.str());
-	}
-	for (int i = 0; i < 256; i++) {
-		std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(tmp_inv_sbox[i]) << " ";
-		if ((i + 1) % 16 == 0) {
-			std::cout << std::endl;
-		}
-	} 
-    return tmp_inv_sbox;
-}
-static const unsigned char INV_SBOX[256] = {*calculate_inv_sbox()};
+static unsigned char* INV_SBOX = NULL;
 
 static const unsigned char RCON[255] =
 {
@@ -301,6 +276,34 @@ void decipher(const unsigned char* in, const unsigned char* roundKey, unsigned c
   }
 }
 
+unsigned char* calculate_inv_sbox(){
+	unsigned char* tmp_inv_sbox = new unsigned char[256];
+    for (int i = 0; i < 256; i++) {
+        int index = SBOX[i];
+        std::stringstream ss;
+        ss << std::hex << std::setw(2) << std::setfill('0') << index; // Use std::hex to format as hexadecimal
+        std::string index_str = ss.str();
+        int index1 = stoi(index_str.substr(0, 1), nullptr, 16);
+        int index2 = stoi(index_str.substr(1, 1), nullptr, 16);
+        int new_index = index1*16 + index2;
+        std::stringstream ss2;
+        ss2 << std::hex << std::setw(1) << (i / 16) << std::hex << std::setw(1) << (i % 16);
+        int value = std::stoi(ss2.str(), nullptr, 16); // Convert the hexadecimal string to an integer value
+        tmp_inv_sbox[new_index] = value; // Store the integer value in the unsigned char array
+        std::cout << "ss: " << ss.str() << ", index1: " << index1 << ", index2: " << index2 << ", new_index: " << new_index << ", ss2: " << ss2.str() << ", added: " << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(tmp_inv_sbox[new_index]) << std::endl;
+	}
+    return tmp_inv_sbox;
+}
+
+void init_inv_sbox() {
+    if (INV_SBOX == NULL) {
+        INV_SBOX = (unsigned char*)malloc(256 * sizeof(unsigned char));
+        unsigned char* tmp_inv_sbox = calculate_inv_sbox();
+        memcpy(INV_SBOX, tmp_inv_sbox, 256 * sizeof(unsigned char));
+        delete[] tmp_inv_sbox;
+    }
+}
+
 int main(int argc, char* argv[])
 {
   unsigned char roundKey[240];
@@ -309,12 +312,17 @@ int main(int argc, char* argv[])
 
   // Sample
   {
+	init_inv_sbox();
+	
+	std::cout << std::endl << "SBOX:" << std::endl;
 	for (int i = 0; i < 256; i++) {
 		std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(SBOX[i]) << " ";
 		if ((i + 1) % 16 == 0) {
 			std::cout << std::endl;
 		}
 	}
+	
+	std::cout << std::endl << "INV_SBOX:" << std::endl;
 	for (int i = 0; i < 256; i++) {
 		std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(INV_SBOX[i]) << " ";
 		if ((i + 1) % 16 == 0) {

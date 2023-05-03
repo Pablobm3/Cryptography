@@ -21,19 +21,19 @@ SBOX = [0x63, 0x7c, 0x77, 0x7b, 0xf2, 0x6b, 0x6f, 0xc5, 0x30, 0x01,
 0x28, 0xdf, 0x8c, 0xa1, 0x89, 0x0d, 0xbf, 0xe6, 0x42, 0x68, 0x41, 0x99, 
 0x2d, 0x0f, 0xb0, 0x54, 0xbb, 0x16]
 def calculate_inv_sbox():
-	INV_SBOX = ['0']*256
-	for i in range (0, 256):
-		index = SBOX[i]
-		print(str(index))
-		index1 = format(index, "02x")[0]
-		print(str(index1))
-		index1 = int(index1, 16)
-		index2 = format(index, "02x")[1]
-		print(str(index2))
-		index2 = int(index2, 16)
-		new_index = index1 + index2*16
- 
-		INV_SBOX[new_index] = "0x"+format(int(i%16), "01x")+format(int(i/16), "01x")
-	print("The reverse sbox is: "+str(INV_SBOX))
-	
+    INV_SBOX = ['0']*256
+    for i in range (0, 255):
+        index = SBOX[i]
+        index1 = format(index, "02x")[0]
+        index1 = int(index1, 16)
+        index2 = format(index, "02x")[1]
+        index2 = int(index2, 16)
+        new_index = index1 + index2*16
+        INV_SBOX[new_index] = "0x"+format(int(i%16), "01x")+format(int(i/16), "01x")
+        print("index1: "+str(index1)+", index2: "+str(index2)+", new_index: "+str(new_index)+", added: "+str(INV_SBOX[new_index]))
+    print("The reverse sbox is: ")
+    for i in range (0, 256):
+        print(INV_SBOX[i], end = ' ')
+        if((i + 1) % 16 == 0):
+            print()
 calculate_inv_sbox()
