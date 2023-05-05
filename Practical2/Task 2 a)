@@ -13,3 +13,24 @@ which is equivalent to:
 2^832 / 10^15 seconds
 
 which is an extremely large number and practically impossible to achieve. Even if we use an extremely fast and efficient computer, such as a supercomputer, it would probably take years or even decades to recover the key.
+
+-------------------------------
+Corentin:
+
+Due to some weird software fault a part of C. Johnson’s 128-bit AES key, which was used to
+encrypt text notes of great scientific value, got overwritten with zeros. The only information left
+is a sequence of the first few bytes of the key that is 81596bfb39c62b716e52db9181.
+
+(a) Your task now is to compute the number of possible keys that start with the byte sequence
+from above on a theoretical basis and to estimate the expected amount of time to retrieve
+the password using a brute-force attack based on your computer’s speed.
+
+	Answer:
+	
+	There are only 128 bits in the key and we know the first bytes of the key: 81596bfb39c62b716e52db9181, that is the first 24 hexadecimal characters of the key.
+	Knowing that a hexadecimal character corresponds to 16 possibilities, that is to say 2⁴ (0 to 15) so also 4 bits. So we have 128-(26*4)=24 bits left to find on the original 128.
+	These 24 bits represent 2²⁴ = 16777216 possibilities.
+
+	To estimate the time it would take for a brute-force attack to recover the password, we need to know the processing speed of our computer and the efficiency of our brute-force attack algorithm.
+	Assuming we use an average computer with a processing speed of 1 GHz == assuming we can try 1 million keys per second (10⁹~=2²⁰), we would need:
+	2²⁴/2²⁰ = 2⁴ = 16s
