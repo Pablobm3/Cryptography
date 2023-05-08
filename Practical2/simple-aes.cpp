@@ -400,7 +400,7 @@ int main(int argc, char* argv[])
     const unsigned char ciphertext[32] =
     {
       'b', 'f', '3', 'f', 'b', '7', '7', 'd', '9', '3', 'd', 'd', '6', 'c', 'f', 'd', 'e', 'f', 'b', '8', '8', '2', '2', 'b', '8', '2', 'd', '0', '3', '5', '8', 'a'
-    };
+    }; 
 	
 	unsigned char key[32] =
 	{
@@ -448,23 +448,41 @@ int main(int argc, char* argv[])
     }
     for (int i = 0; i < 1000; i++) {
 		for (int j = 0; j < 32; j++) {
-            key_list[i][j] = '0';
+            key_list[i][j] = '\0';
         }
     }
-
+	
+	
 	int index = 0;
+	bool done = false; // test to stop at first match
+	
 	for(unsigned int a = 1; a < num_possible_hex_values; a++) {
+		if (done) {
+			break;
+		}
 		for(unsigned int b = 1; b < num_possible_hex_values; b++) {
+			if (done) {
+				break;
+			}
 			for(unsigned int c = 1; c < num_possible_hex_values; c++) {
+				if (done) {
+					break;
+				}
 				for(unsigned int d = 1; d < num_possible_hex_values; d++) {
+					if (done) {
+						break;
+					}
 					for(unsigned int e = 1; e < num_possible_hex_values; e++) {
+						if (done) {
+							break;
+						}
 						for(unsigned int f = 0; f < num_possible_hex_values; f++) {
-							/*std::cout << std::endl << "The tested key:" << std::hex << std::endl;
+							std::cout << std::endl << "The tested key:" << std::hex << std::endl;
 							for (unsigned int i = 0; i < 32; ++i) {
 								std::cout << "0x" << (unsigned int)key[i] << ", ";
 							}
 							std::cout << std::endl;
-							*/
+							
 							keyExpansion(key, roundKey);
 							unsigned char plaintext[32];
 							unsigned char* decrypted = decrypt(ciphertext, roundKey);
@@ -473,6 +491,9 @@ int main(int argc, char* argv[])
 								plaintext_list[index] = decrypted;
 								key_list[index] = key;
 								index++;
+								// test to stop at first match
+								done = true;
+								break;
 							}
 							key[31] = possible_hex_values[f];
 						}
@@ -486,10 +507,36 @@ int main(int argc, char* argv[])
 		}
 		key[26] = possible_hex_values[a];
 	}
+
 	
+	// ######## TEST ################
+	/*
+	unsigned char plaintext[32] =
+    {
+      'b', 'f', '3', 'f', 'b', '7', '7', 'd', '9', '3', 'd', 'd', '6', 'c', 'f', 'd', 'e', 'f', 'b', '8', '8', '2', '2', 'b', '8', '2', 'd', '0', '3', '5', '8', 'a'
+    }; 
+	if (isAlphaNumHex(plaintext, 32)) {
+		std::cout << std::endl << "###################################################" << std::endl << "Matched text:" << plaintext_list << std::endl << "###################################################" << std::endl ;
+		plaintext_list[index] = plaintext;
+		key_list[index] = key;
+		index++;
+	}
+	*/
+
 	for(int i=0; i<1000; i++) {
+		if((key_list[i][0]=='\0')||(plaintext_list[i][0]=='\0')){
+			break;
+		}
+		
+		std::cout << std::endl << "Key value:" << std::hex << std::endl;
 		for(int j=0; j<32; j++) {
-			std::cout << plaintext_list[i][j] << " " << key_list[i][j] << std::endl;
+			std::cout << key_list[i][j] << " ";
+		}
+		
+		std::cout << std::endl << "Plaintext:" << std::hex << std::endl;
+		for(int j=0; j<32; j++) {
+
+			std::cout << plaintext_list[i][j] << " ";
 		}
 		std::cout << std::endl;
 	}
