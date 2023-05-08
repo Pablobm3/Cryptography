@@ -3,6 +3,7 @@
 #include <sstream>
 #include <cstring>
 #include <cmath>
+#include <chrono>
 
 const unsigned int NUM_ROUNDS = 4 + 6;
 
@@ -317,14 +318,14 @@ unsigned char* encrypt(const unsigned char* in, const unsigned char* roundKey) {
 	}
 
     std::cout << std::endl << "Text before encryption:" << std::hex << std::endl;
-    for (unsigned int i = 0; i < 32; ++i)
+    for (unsigned int i = 0; i < 16; ++i)
       std::cout << "0x" << std::setw(2) << std::setfill('0') << (unsigned int)in[i] << ", ";
     std::cout << std::endl;
 
     cipher(in, roundKey, out);
 
     std::cout << std::endl << "Text after encryption:" << std::hex << std::endl;
-    for (unsigned int i = 0; i < 32; ++i)
+    for (unsigned int i = 0; i < 16; ++i)
       std::cout << "0x" << std::setw(2) << std::setfill('0') << (unsigned int)out[i] << ", ";
     std::cout << std::endl;
     
@@ -346,19 +347,19 @@ unsigned char* decrypt(const unsigned char* in, const unsigned char* roundKey) {
 	*/
     
     decipher(in, roundKey, out);
-
-    /*std::cout << std::endl << "Text after decryption:" << std::hex << std::endl;
-    for (unsigned int i = 0; i < 32; ++i)
+	
+    std::cout << std::endl << "Text after decryption:" << std::hex << std::endl;
+    for (unsigned int i = 0; i < 16; ++i)
       std::cout << "0x" << std::setw(2) << std::setfill('0') << (unsigned int)out[i] << ", ";
     std::cout << std::endl;
-    */
     
     return out;
 }
 
 bool isAlphaNumHex(unsigned char* in, int size) {
   for (int i = 0; i < size; i++) {
-    if (!((in[i] >= 0x30 && in[i] <= 0x39) || (in[i] >= 0x61 && in[i] <= 0x66) || (in[i] == 0x2e))) {
+    if (!((in[i] >= 0x61 && in[i] <= 0x7a) || (in[i] == 0x2e))) {
+	  std::cout << std::endl << "Character not in the list: " << "0x" << std::setw(2) << std::setfill('0') << (unsigned int)in[i] << ", text: " << in[i] << std::endl;
       return false;
     }
   }
@@ -397,48 +398,33 @@ int main(int argc, char* argv[])
     */
     
     // Part 2
-    const unsigned char ciphertext[32] =
+    using std::chrono::high_resolution_clock;
+    using std::chrono::duration_cast;
+    using std::chrono::duration;
+    using std::chrono::milliseconds;
+    
+    auto t1 = high_resolution_clock::now();
+    const unsigned char ciphertext[16] =
     {
-      'b', 'f', '3', 'f', 'b', '7', '7', 'd', '9', '3', 'd', 'd', '6', 'c', 'f', 'd', 'e', 'f', 'b', '8', '8', '2', '2', 'b', '8', '2', 'd', '0', '3', '5', '8', 'a'
+      0xbf, 0x3f, 0xb7, 0x7d, 0x93, 0xdd, 0x6c, 0xfd, 0xef, 0xb8, 0x82, 0x2b, 0x82, 0xd0, 0x35, 0x8a
     }; 
 	
-	unsigned char key[32] =
+	unsigned char key[16] =
 	{
-	  '8', '1', '5', '9', '6', 'b', 'f', 'b', '3', '9', 'c', '6', '2', 'b', '7', '1', '6', 'e', '5', '2', 'd', 'b', '9', '1', '8', '1', '\0', '\0', '\0', '\0', '\0', '\0'
+	  0x81, 0x59, 0x6b, 0xfb, 0x39, 0xc6, 0x2b, 0x71, 0x6e, 0x52, 0xdb, 0x91, 0x81, '\0', '\0', '\0'
 	};
 	std::cout << std::endl << "The original key:" << std::hex << std::endl;
-	for (unsigned int i = 0; i < 32; ++i) {
+	for (unsigned int i = 0; i < 16; ++i) {
 		std::cout << "0x" << (unsigned int)key[i] << ", ";
 	}
 	std::cout << std::endl;
-
-	// generate list of possible hexadecimal values
-	unsigned int num_possible_hex_values = 128;
-	unsigned char possible_hex_values[num_possible_hex_values] = {'\0'};
-	int num_valid_hex_values = 0;
-	for(unsigned int c = 0; c < num_possible_hex_values; c++) {
-		if((c >= 0x30 && c <= 0x39) || (c >= 0x61 && c <= 0x7a) || (c == 0x2e)) {
-			possible_hex_values[num_valid_hex_values++] = c;
-		}
-	}
-	num_possible_hex_values = countNonNull(possible_hex_values, 128);
-	
-	std::cout << std::endl << "Possible values:" << std::hex << std::endl;
-	for (unsigned int i = 0; i < sizeof(possible_hex_values); ++i) {
-		std::cout << "0x" << (unsigned int)possible_hex_values[i] << ", ";
-	}
-	std::cout << std::endl;
-
-	for(int i = 26; i < 32; i++) {
-		key[i] = possible_hex_values[0];
-	}
 	
 	unsigned char** plaintext_list = new unsigned char*[1000];
 	for (int i = 0; i < 1000; i++) {
         plaintext_list[i] = new unsigned char[32];
     }
     for (int i = 0; i < 1000; i++) {
-		for (int j = 0; j < 32; j++) {
+		for (int j = 0; j < 16; j++) {
             plaintext_list[i][j] = '0';
         }
     }
@@ -447,81 +433,50 @@ int main(int argc, char* argv[])
         key_list[i] = new unsigned char[32];
     }
     for (int i = 0; i < 1000; i++) {
-		for (int j = 0; j < 32; j++) {
+		for (int j = 0; j < 16; j++) {
             key_list[i][j] = '\0';
         }
     }
 	
+	for(int i = 13; i < 16; i++) {
+		key[i] = 0x00;
+	}
 	
 	int index = 0;
-	bool done = false; // test to stop at first match
+	int nb_try = 0;
+	bool done = false; //to stop the for loops
 	
-	for(unsigned int a = 1; a < num_possible_hex_values; a++) {
-		if (done) {
-			break;
-		}
-		for(unsigned int b = 1; b < num_possible_hex_values; b++) {
-			if (done) {
-				break;
-			}
-			for(unsigned int c = 1; c < num_possible_hex_values; c++) {
-				if (done) {
+	for(unsigned int a = 0x01; a < 0xff; a++) {
+		if (done) break;
+		for(unsigned int b = 0x01; b < 0xff; b++) {
+			if (done) break;
+			for(unsigned int c = 0x00; c < 0xff; c++) {
+				nb_try++;
+				std::cout << std::endl << "The tested key:" << std::hex << std::endl;
+				for (unsigned int i = 0; i < 16; ++i) {
+				std::cout << "0x" << std::setw(2) << std::setfill('0') << (unsigned int)key[i] << ", ";
+				}
+				std::cout << std::endl;
+							
+				keyExpansion(key, roundKey);
+				unsigned char* decrypted = decrypt(ciphertext, roundKey);
+				if (isAlphaNumHex(decrypted, 16)) {
+					std::cout << std::endl << "###################################################" << std::endl << "Matched text" << std::endl << "###################################################" << std::endl ;
+					plaintext_list[index] = decrypted;
+					key_list[index] = key;
+					index++;
+					// stop the for loop
+					done = true;
 					break;
 				}
-				for(unsigned int d = 1; d < num_possible_hex_values; d++) {
-					if (done) {
-						break;
-					}
-					for(unsigned int e = 1; e < num_possible_hex_values; e++) {
-						if (done) {
-							break;
-						}
-						for(unsigned int f = 0; f < num_possible_hex_values; f++) {
-							std::cout << std::endl << "The tested key:" << std::hex << std::endl;
-							for (unsigned int i = 0; i < 32; ++i) {
-								std::cout << "0x" << (unsigned int)key[i] << ", ";
-							}
-							std::cout << std::endl;
-							
-							keyExpansion(key, roundKey);
-							unsigned char plaintext[32];
-							unsigned char* decrypted = decrypt(ciphertext, roundKey);
-							if (isAlphaNumHex(plaintext, 32)) {
-								std::cout << std::endl << "###################################################" << std::endl << "Matched text:" << plaintext_list << std::endl << "###################################################" << std::endl ;
-								plaintext_list[index] = decrypted;
-								key_list[index] = key;
-								index++;
-								// test to stop at first match
-								done = true;
-								break;
-							}
-							key[31] = possible_hex_values[f];
-						}
-						key[30] = possible_hex_values[e];
-					}
-					key[29] = possible_hex_values[d];
-				}
-				key[28] = possible_hex_values[c];
+				std::cout << std::endl << "-------------------------------------------------" << std::endl;
+				key[15] = c;
 			}
-			key[27] = possible_hex_values[b];
+			key[14] = b;
 		}
-		key[26] = possible_hex_values[a];
+		key[13] = a;
 	}
-
-	
-	// ######## TEST ################
-	/*
-	unsigned char plaintext[32] =
-    {
-      'b', 'f', '3', 'f', 'b', '7', '7', 'd', '9', '3', 'd', 'd', '6', 'c', 'f', 'd', 'e', 'f', 'b', '8', '8', '2', '2', 'b', '8', '2', 'd', '0', '3', '5', '8', 'a'
-    }; 
-	if (isAlphaNumHex(plaintext, 32)) {
-		std::cout << std::endl << "###################################################" << std::endl << "Matched text:" << plaintext_list << std::endl << "###################################################" << std::endl ;
-		plaintext_list[index] = plaintext;
-		key_list[index] = key;
-		index++;
-	}
-	*/
+	auto t2 = high_resolution_clock::now();
 
 	for(int i=0; i<1000; i++) {
 		if((key_list[i][0]=='\0')||(plaintext_list[i][0]=='\0')){
@@ -529,17 +484,21 @@ int main(int argc, char* argv[])
 		}
 		
 		std::cout << std::endl << "Key value:" << std::hex << std::endl;
-		for(int j=0; j<32; j++) {
-			std::cout << key_list[i][j] << " ";
+		for(int j=0; j<16; j++) {
+			std::cout << "0x" << std::setw(2) << std::setfill('0') << (unsigned int)key_list[i][j] << " ";
 		}
 		
 		std::cout << std::endl << "Plaintext:" << std::hex << std::endl;
-		for(int j=0; j<32; j++) {
+		for(int j=0; j<16; j++) {
 
 			std::cout << plaintext_list[i][j] << " ";
 		}
 		std::cout << std::endl;
 	}
+	
+	duration<double, std::milli> ms_double = t2 - t1;
+	std::cout << "Execution time: " << ms_double.count() << "ms\n" << std::endl;
+	std::cout << "Number of tries: " << std::dec << nb_try << std::endl;
   }
 
   return 0;
