@@ -27,7 +27,7 @@ the password using a brute-force attack based on your computer’s speed.
 
 	Answer:
 	
-	There are only 128 bits in the key and we know the first bytes of the key: 81596bfb39c62b716e52db9181, that is the first 24 hexadecimal characters of the key.
+	There are only 128 bits in the key and we know the first bytes of the key: 81596bfb39c62b716e52db9181, that is the first 26 hexadecimal characters of the key.
 	Knowing that a hexadecimal character corresponds to 16 possibilities, that is to say 2⁴ (0 to 15) so also 4 bits. So we have 128-(26*4)=24 bits left to find on the original 128.
 	These 24 bits represent 2²⁴ = 16777216 possibilities.
 

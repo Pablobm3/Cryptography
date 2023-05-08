@@ -2,6 +2,7 @@
 #include <iomanip>
 #include <sstream>
 #include <cstring>
+#include <cmath>
 
 const unsigned int NUM_ROUNDS = 4 + 6;
 
@@ -290,7 +291,7 @@ unsigned char* calculate_inv_sbox(){
         ss2 << std::hex << std::setw(1) << (i / 16) << std::hex << std::setw(1) << (i % 16);
         int value = std::stoi(ss2.str(), nullptr, 16); // Convert the hexadecimal string to an integer value
         tmp_inv_sbox[new_index] = value; // Store the integer value in the unsigned char array
-        std::cout << "ss: " << ss.str() << ", index1: " << index1 << ", index2: " << index2 << ", new_index: " << new_index << ", ss2: " << ss2.str() << ", added: " << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(tmp_inv_sbox[new_index]) << std::endl;
+        //std::cout << "ss: " << ss.str() << ", index1: " << index1 << ", index2: " << index2 << ", new_index: " << new_index << ", ss2: " << ss2.str() << ", added: " << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(tmp_inv_sbox[new_index]) << std::endl;
 	}
     return tmp_inv_sbox;
 }
@@ -304,15 +305,8 @@ void init_inv_sbox() {
     }
 }
 
-int main(int argc, char* argv[])
-{
-  unsigned char roundKey[240];
-  unsigned char out_encrypt[16];
-  unsigned char out_decrypt[16];
-
-  // Sample
-  {
-	init_inv_sbox();
+unsigned char* encrypt(const unsigned char* in, const unsigned char* roundKey) {
+	unsigned char* out = new unsigned char[32];
 	
 	std::cout << std::endl << "SBOX:" << std::endl;
 	for (int i = 0; i < 256; i++) {
@@ -321,16 +315,74 @@ int main(int argc, char* argv[])
 			std::cout << std::endl;
 		}
 	}
+
+    std::cout << std::endl << "Text before encryption:" << std::hex << std::endl;
+    for (unsigned int i = 0; i < 32; ++i)
+      std::cout << "0x" << std::setw(2) << std::setfill('0') << (unsigned int)in[i] << ", ";
+    std::cout << std::endl;
+
+    cipher(in, roundKey, out);
+
+    std::cout << std::endl << "Text after encryption:" << std::hex << std::endl;
+    for (unsigned int i = 0; i < 32; ++i)
+      std::cout << "0x" << std::setw(2) << std::setfill('0') << (unsigned int)out[i] << ", ";
+    std::cout << std::endl;
+    
+    return out;
+}
+
+unsigned char* decrypt(const unsigned char* in, const unsigned char* roundKey) {
+	unsigned char* out = new unsigned char[32];
 	
-	std::cout << std::endl << "INV_SBOX:" << std::endl;
+	init_inv_sbox();
+
+	/*std::cout << std::endl << "INV_SBOX:" << std::endl;
 	for (int i = 0; i < 256; i++) {
 		std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(INV_SBOX[i]) << " ";
 		if ((i + 1) % 16 == 0) {
 			std::cout << std::endl;
 		}
-	} 
-	
-    const unsigned char in[16] =
+	}
+	*/
+    
+    decipher(in, roundKey, out);
+
+    /*std::cout << std::endl << "Text after decryption:" << std::hex << std::endl;
+    for (unsigned int i = 0; i < 32; ++i)
+      std::cout << "0x" << std::setw(2) << std::setfill('0') << (unsigned int)out[i] << ", ";
+    std::cout << std::endl;
+    */
+    
+    return out;
+}
+
+bool isAlphaNumHex(unsigned char* in, int size) {
+  for (int i = 0; i < size; i++) {
+    if (!((in[i] >= 0x30 && in[i] <= 0x39) || (in[i] >= 0x61 && in[i] <= 0x66) || (in[i] == 0x2e))) {
+      return false;
+    }
+  }
+  return true;
+}
+
+int countNonNull(unsigned char* arr, unsigned int size) {
+    int count = 0;
+    for(unsigned int i = 0; i < size; i++) {
+        if(arr[i] != 0) {
+            count++;
+        }
+    }
+    return count;
+}
+
+int main(int argc, char* argv[])
+{
+  unsigned char roundKey[240];
+
+  // Sample
+  {
+	// Part1
+	/*const unsigned char in[16] =
     {
       'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
       'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p'
@@ -340,26 +392,107 @@ int main(int argc, char* argv[])
       0xa3, 0x28, 0x4e, 0x09, 0xc6, 0xfe, 0x53, 0x29,
       0x97, 0xef, 0x6d, 0x10, 0x74, 0xc3, 0xde, 0xad
     };
-
-    std::cout << std::endl << "Text before encryption:" << std::hex << std::endl;
-    for (unsigned int i = 0; i != 4 * 4; ++i)
-      std::cout << "0x" << (unsigned int)in[i] << ", ";
-    std::cout << std::endl;
-
     keyExpansion(key, roundKey);
-    cipher(in, roundKey, out_encrypt);
-
-    std::cout << std::endl << "Text after encryption:" << std::hex << std::endl;
-    for (unsigned int i = 0; i != 4 * 4; ++i)
-      std::cout << "0x" << (unsigned int)out_encrypt[i] << ", ";
-    std::cout << std::endl;
+    decrypt(encrypt(in, roundKey), roundKey);
+    */
     
-    decipher(out_encrypt, roundKey, out_decrypt);
+    // Part 2
+    const unsigned char ciphertext[32] =
+    {
+      'b', 'f', '3', 'f', 'b', '7', '7', 'd', '9', '3', 'd', 'd', '6', 'c', 'f', 'd', 'e', 'f', 'b', '8', '8', '2', '2', 'b', '8', '2', 'd', '0', '3', '5', '8', 'a'
+    };
+	
+	unsigned char key[32] =
+	{
+	  '8', '1', '5', '9', '6', 'b', 'f', 'b', '3', '9', 'c', '6', '2', 'b', '7', '1', '6', 'e', '5', '2', 'd', 'b', '9', '1', '8', '1', '\0', '\0', '\0', '\0', '\0', '\0'
+	};
+	std::cout << std::endl << "The original key:" << std::hex << std::endl;
+	for (unsigned int i = 0; i < 32; ++i) {
+		std::cout << "0x" << (unsigned int)key[i] << ", ";
+	}
+	std::cout << std::endl;
 
-    std::cout << std::endl << "Text after decryption:" << std::hex << std::endl;
-    for (unsigned int i = 0; i != 4 * 4; ++i)
-      std::cout << "0x" << (unsigned int)out_decrypt[i] << ", ";
-    std::cout << std::endl;
+	// generate list of possible hexadecimal values
+	unsigned int num_possible_hex_values = 128;
+	unsigned char possible_hex_values[num_possible_hex_values] = {'\0'};
+	int num_valid_hex_values = 0;
+	for(unsigned int c = 0; c < num_possible_hex_values; c++) {
+		if((c >= 0x30 && c <= 0x39) || (c >= 0x61 && c <= 0x7a) || (c == 0x2e)) {
+			possible_hex_values[num_valid_hex_values++] = c;
+		}
+	}
+	num_possible_hex_values = countNonNull(possible_hex_values, 128);
+	
+	std::cout << std::endl << "Possible values:" << std::hex << std::endl;
+	for (unsigned int i = 0; i < sizeof(possible_hex_values); ++i) {
+		std::cout << "0x" << (unsigned int)possible_hex_values[i] << ", ";
+	}
+	std::cout << std::endl;
+
+	for(int i = 26; i < 32; i++) {
+		key[i] = possible_hex_values[0];
+	}
+	
+	unsigned char** plaintext_list = new unsigned char*[1000];
+	for (int i = 0; i < 1000; i++) {
+        plaintext_list[i] = new unsigned char[32];
+    }
+    for (int i = 0; i < 1000; i++) {
+		for (int j = 0; j < 32; j++) {
+            plaintext_list[i][j] = '0';
+        }
+    }
+    unsigned char** key_list = new unsigned char*[1000];
+	for (int i = 0; i < 1000; i++) {
+        key_list[i] = new unsigned char[32];
+    }
+    for (int i = 0; i < 1000; i++) {
+		for (int j = 0; j < 32; j++) {
+            key_list[i][j] = '0';
+        }
+    }
+
+	int index = 0;
+	for(unsigned int a = 1; a < num_possible_hex_values; a++) {
+		for(unsigned int b = 1; b < num_possible_hex_values; b++) {
+			for(unsigned int c = 1; c < num_possible_hex_values; c++) {
+				for(unsigned int d = 1; d < num_possible_hex_values; d++) {
+					for(unsigned int e = 1; e < num_possible_hex_values; e++) {
+						for(unsigned int f = 0; f < num_possible_hex_values; f++) {
+							/*std::cout << std::endl << "The tested key:" << std::hex << std::endl;
+							for (unsigned int i = 0; i < 32; ++i) {
+								std::cout << "0x" << (unsigned int)key[i] << ", ";
+							}
+							std::cout << std::endl;
+							*/
+							keyExpansion(key, roundKey);
+							unsigned char plaintext[32];
+							unsigned char* decrypted = decrypt(ciphertext, roundKey);
+							if (isAlphaNumHex(plaintext, 32)) {
+								std::cout << std::endl << "###################################################" << std::endl << "Matched text:" << plaintext_list << std::endl << "###################################################" << std::endl ;
+								plaintext_list[index] = decrypted;
+								key_list[index] = key;
+								index++;
+							}
+							key[31] = possible_hex_values[f];
+						}
+						key[30] = possible_hex_values[e];
+					}
+					key[29] = possible_hex_values[d];
+				}
+				key[28] = possible_hex_values[c];
+			}
+			key[27] = possible_hex_values[b];
+		}
+		key[26] = possible_hex_values[a];
+	}
+	
+	for(int i=0; i<1000; i++) {
+		for(int j=0; j<32; j++) {
+			std::cout << plaintext_list[i][j] << " " << key_list[i][j] << std::endl;
+		}
+		std::cout << std::endl;
+	}
   }
 
   return 0;
