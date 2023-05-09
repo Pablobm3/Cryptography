@@ -383,10 +383,16 @@ int main(int argc, char* argv[])
   // Sample
   {
 	// Part1
-	/*const unsigned char in[16] =
+	/*
+	//const unsigned char in[16] =
+    //{
+    //  'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+    //  'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p'
+    //};
+    const unsigned char in[16] =
     {
-      'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
-      'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p'
+      'z', 'y', 'x', 'w', 'v', 'u', 't', 's',
+      'r', 'q', 'p', 'o', 'n', 'm', 'l', 'k'
     };
     const unsigned char key[16] =
     {
@@ -398,6 +404,7 @@ int main(int argc, char* argv[])
     */
     
     // Part 2
+    /*
     using std::chrono::high_resolution_clock;
     using std::chrono::duration_cast;
     using std::chrono::duration;
@@ -499,6 +506,7 @@ int main(int argc, char* argv[])
 	duration<double, std::milli> ms_double = t2 - t1;
 	std::cout << "Execution time: " << ms_double.count() << "ms\n" << std::endl;
 	std::cout << "Number of tries: " << std::dec << nb_try << std::endl;
+  */
   }
 
   return 0;

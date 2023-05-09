@@ -32,5 +32,5 @@ the password using a brute-force attack based on your computer’s speed.
 	These 24 bits represent 2²⁴ = 16777216 possibilities.
 
 	To estimate the time it would take for a brute-force attack to recover the password, we need to know the processing speed of our computer and the efficiency of our brute-force attack algorithm.
-	Assuming we use an average computer with a processing speed of 1 GHz == assuming we can try 1 million keys per second (10⁹~=2²⁰), we would need:
-	2²⁴/2²⁰ = 2⁴ = 16s
+
+	
