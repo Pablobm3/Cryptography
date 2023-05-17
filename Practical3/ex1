@@ -15,3 +15,21 @@ $ openssl enc -aes-256-cbc -pass file:key.txt -in notcypherfile -out cypherfile.
 
 # Encrypt value generated randomly with the public key
 $ openssl rsautl -encrypt -in key.txt -out key.enc -inkey keyfile.pub.pem -pubin
+
+
+b)
+
+OpenSSL uses various encodings to store data structures like RSA key pairs. The two primary encodings used by OpenSSL for storing RSA key pairs are:
+
+    PEM (Privacy-Enhanced Mail): PEM is a commonly used format in OpenSSL. It is a base64-encoded format that represents data structures in ASCII text. 
+    PEM files typically have extensions like .pem, .crt, .key, or .cer. PEM format is human-readable and can store not only RSA key pairs but also other cryptographic objects like X.509 certificates and private keys.
+
+    DER (Distinguished Encoding Rules): DER is a binary format that represents data structures. It is a more compact and machine-readable encoding compared to PEM. 
+    DER files typically have extensions like .der or .crt. DER format is used for encoding cryptographic objects such as RSA keys, X.509 certificates, and certificate signing requests (CSRs).
+
+The relationship between these encodings is that they can be used to represent the same data structure. For example, an RSA key pair can be stored in both PEM and DER formats. 
+PEM format uses base64 encoding and includes additional header and footer lines to indicate the type of data (e.g., "BEGIN RSA PRIVATE KEY" and "END RSA PRIVATE KEY"). DER format, on the other hand, is a binary representation of the same data structure without any additional header or footer lines.
+
+
+
+OpenSSL provides commands and functions to convert between these encodings. For example, the openssl rsa command can be used to convert an RSA key from PEM to DER format and vice versa. Similarly, OpenSSL libraries provide functions like PEM_read_*() and PEM_write_*() to handle PEM-encoded data, and d2i_*() and i2d_*() functions to handle DER-encoded data.
