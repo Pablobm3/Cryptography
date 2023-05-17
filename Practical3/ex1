@@ -1,0 +1,17 @@
+a)
+
+# Generate private and public ket
+
+$ openssl genrsa -out keyfile.pem 2048
+
+$ openssl rsa -in keyfile.pem -out keyfile.pub.pem -outform PEM -pubout
+
+# Generate random key
+
+$ openssl rand -base64 48 > key.txt
+
+# Encrypt file with simetric key
+$ openssl enc -aes-256-cbc -pass file:key.txt -in notcypherfile -out cypherfile.encrypted
+
+# Encrypt value generated randomly with the public key
+$ openssl rsautl -encrypt -in key.txt -out key.enc -inkey keyfile.pub.pem -pubin
