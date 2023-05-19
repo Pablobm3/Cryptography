@@ -1,0 +1,32 @@
+$ ./RsaCtfTool.py -n 2281437973 -e 3 --uncipher 232770554 --private
+
+[*] Testing key /tmp/tmp2ekz0gsd.
+attack initialized...
+attack initialized...
+[*] Performing factordb attack on /tmp/tmp2ekz0gsd.
+[*] Attack success with factordb method !
+
+Results for /tmp/tmp2ekz0gsd:
+
+Private key :
+-----BEGIN RSA PRIVATE KEY-----
+MCoCAQACBQCH+/sVAgEDAgRapvmzAgMAjCcCAwD4YwICXW8CAwCllwICfys=
+-----END RSA PRIVATE KEY-----
+
+Unciphered data :
+HEX : 0x499602d2
+INT (big endian) : 1234567890
+INT (little endian) : 3523384905
+utf-16 : 陉툂
+STR : b'I\x96\x02\xd2'
+
+
+
+
+$ ./RsaCtfTool.py --dumpkey --key key.pem 
+private argument is not set, the private key will not be displayed, even if recovered.
+n: 2281437973
+e: 3
+d: 1520892339
+p: 35879
+q: 63587
