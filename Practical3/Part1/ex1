@@ -36,15 +36,24 @@ b)
 
 OpenSSL uses various encodings to store data structures like RSA key pairs. The two primary encodings used by OpenSSL for storing RSA key pairs are:
 
-    PEM (Privacy-Enhanced Mail): PEM is a commonly used format in OpenSSL. It is a base64-encoded format that represents data structures in ASCII text. PEM files typically have extensions like .pem, .crt, .key, or .cer. PEM format is human-readable and can store not only RSA key pairs but also other cryptographic objects like X.509 certificates and private keys.
+    PEM (Privacy-Enhanced Mail): PEM is a commonly used format in OpenSSL. It is a base64-encoded format that represents data structures in ASCII text. 
+    PEM files typically have extensions like .pem, .crt, .key, or .cer. PEM format is human-readable and can store not only RSA key pairs but also other 
+    cryptographic objects like X.509 certificates and private keys.
 
-    DER (Distinguished Encoding Rules): DER is a binary format that represents data structures. It is a more compact and machine-readable encoding compared to PEM. DER files typically have extensions like .der or .crt. DER format is used for encoding cryptographic objects such as RSA keys, X.509 certificates, and certificate signing requests (CSRs).
+    DER (Distinguished Encoding Rules): DER is a binary format that represents data structures. It is a more compact and machine-readable encoding compared 
+    to PEM. DER files typically have extensions like .der or .crt. DER format is used for encoding cryptographic objects such as RSA keys, X.509 certificates, 
+    and certificate signing requests (CSRs).
 
-The relationship between these encodings is that they can be used to represent the same data structure. For example, an RSA key pair can be stored in both PEM and DER formats. PEM format uses base64 encoding and includes additional header and footer lines to indicate the type of data (e.g., "BEGIN RSA PRIVATE KEY" and "END RSA PRIVATE KEY"). DER format, on the other hand, is a binary representation of the same data structure without any additional header or footer lines.
+The relationship between these encodings is that they can be used to represent the same data structure. For example, an RSA key pair can be stored in both 
+PEM and DER formats. PEM format uses base64 encoding and includes additional header and footer lines to indicate the type of data (e.g., "BEGIN RSA PRIVATE KEY" 
+and "END RSA PRIVATE KEY"). DER format, on the other hand, is a binary representation of the same data structure without any additional header or footer lines.
 
-OpenSSL provides commands and functions to convert between these encodings. For example, the openssl rsa command can be used to convert an RSA key from PEM to DER format and vice versa. Similarly, OpenSSL libraries provide functions like PEM_read_*() and PEM_write_*() to handle PEM-encoded data, and d2i_*() and i2d_*() functions to handle DER-encoded data.
+OpenSSL provides commands and functions to convert between these encodings. For example, the openssl rsa command can be used to convert an RSA key from PEM to 
+DER format and vice versa. Similarly, OpenSSL libraries provide functions like PEM_read_*() and PEM_write_*() to handle PEM-encoded data, and d2i_*() and i2d_*() 
+functions to handle DER-encoded data.
 
-Overall, these encodings provide flexibility in how data structures like RSA key pairs can be stored and used in different scenarios, allowing interoperability across various systems and applications.
+Overall, these encodings provide flexibility in how data structures like RSA key pairs can be stored and used in different scenarios, allowing interoperability 
+across various systems and applications.
 
 
 
@@ -53,11 +62,14 @@ c)
 
 The file you provided is an RSA private key in PEM (Privacy-Enhanced Mail) format. The content of the private key is Base64 ASCII encoded.
 
-The PEM (Privacy-Enhanced Mail) format is an encryption convention for files that is widely used in OpenSSL. In the case of RSA private keys, the PEM format uses a Base64 ASCII encoding to represent the binary data of the key in a readable text form.
+The PEM (Privacy-Enhanced Mail) format is an encryption convention for files that is widely used in OpenSSL. In the case of RSA private keys, the PEM format uses a 
+Base64 ASCII encoding to represent the binary data of the key in a readable text form.
 
-The RSA private key in PEM format is bounded by the lines "-----BEGIN RSA PRIVATE KEY-----" and "-----END RSA PRIVATE KEY-----". The content between these lines is the encrypted representation of the private key.
+The RSA private key in PEM format is bounded by the lines "-----BEGIN RSA PRIVATE KEY-----" and "-----END RSA PRIVATE KEY-----". The content between these lines is 
+the encrypted representation of the private key.
 
-To use this private key in OpenSSL or other tools, you can copy the entire contents (including the start and end lines) and save it to a file with a ".pem" or ".key" extension.
+To use this private key in OpenSSL or other tools, you can copy the entire contents (including the start and end lines) and save it to a file with a ".pem" or ".key" 
+extension.
 
 d)
 
@@ -68,7 +80,8 @@ $ ls -la keyfile.*
 The .pem file is heavier than the .der file
 This can be explained on the one hand by the header and footer present in the .pem format, but also by the .pem and .der encodings themselves.
 The .der encoding is faithful to the real size of the stored data because it is a binary format, so it is 100% efficient.
-The base64 encoding uses 8bits of data for 64 values (the equivalent of 6bits), so there is an increase of a factor of 8/6 = 4/3 = 1.33 of the size to represent the data with this encoding. That is also an efficiency of 6/8 bits or 75%.
+The base64 encoding uses 8bits of data for 64 values (the equivalent of 6bits), so there is an increase of a factor of 8/6 = 4/3 = 1.33 of the size to represent the 
+data with this encoding. That is also an efficiency of 6/8 bits or 75%.
 
 e)
 
