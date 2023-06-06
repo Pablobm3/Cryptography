@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
 m = 2000 # number of balls
-n = 0 # number of draw
-probability = 1
+n = 1 # number of draw
+p2_prime = 1 #complement probability
 
-while(probability>0.5):
+while(p2_prime>0.5):
+	p2_prime*=(m-n)/m
 	n+=1
-	probability*=(m-n)/m
 	
-print("minimal n : "+str(n)+" ; with a probability of : "+str(1-probability))
+print("minimal n : "+str(n)+" ; with a probability of : "+str(1-p2_prime))
 print("approximation of minimal n (sqrt(m)) : "+str(m**(1/2)))
