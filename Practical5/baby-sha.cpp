@@ -19,7 +19,8 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 #include <iostream>
 #include <string>
-
+#include <chrono>
+#include <math.h>
 
 // rotate bits left
 unsigned char rol(unsigned char value, unsigned char bits)
@@ -133,18 +134,30 @@ int main(int argc, char* argv[])
     test_baby_sha("d");
 
     // Your code goes here ;o
+    std::cout << std::endl << "Searching for plaintext associated with hash 0xd44a0fd4" << std::endl;
+	
+	auto start = std::chrono::high_resolution_clock::now();
 	
     std::string current = "0";
     State result = baby_sha(current.c_str(), current.length(), DEFAULT_IV);
-	std::cout << std::hex << "baby_sha(\"" << current << "\", " << DEFAULT_IV.dword << ") -> " <<
-				result.dword << std::dec << std::endl;
 
+	unsigned int trials = 0;
     while (result.dword != 0xd44a0fd4 && current.length() != 10) { // Adjust the length as needed
         current = generate_new_string(current);
 		result = baby_sha(current.c_str(), current.length(), DEFAULT_IV);
-		std::cout << std::hex << "baby_sha(\"" << current << "\", " << DEFAULT_IV.dword << ") -> " <<
-					result.dword << std::dec << std::endl;
+		trials++;
 	}
+	
+	auto end = std::chrono::high_resolution_clock::now();
+	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+	double average_execution_time_per_hash = duration / static_cast<double>(trials);
+	
+	std::cout << std::hex << "baby_sha(\"" << current << "\", " << DEFAULT_IV.dword << ") -> " <<
+			result.dword << std::dec << std::endl;
+	
+	std::cout << "Total execution time: " << duration/pow(10,6) << " seconds for " << trials << " number of trials \n";
+	std::cout << "Average execution time per hash: " << average_execution_time_per_hash << " microseconds\n";
+	std::cout << "Estimated time for n/M trials: " << average_execution_time_per_hash*pow(2,31)/pow(10,6) << " seconds or " << average_execution_time_per_hash*pow(2,31)/(pow(10,6)*60) << " minutes \n";
 	
     return 0;
 }
